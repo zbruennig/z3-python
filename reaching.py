@@ -9,6 +9,40 @@ while 1<Y do
 Y := 0
 """
 
+x, y, z = Ints("x y z")
+Var = [x, y, z]
+
+l1, l2, l3, l4, l5, l6, lH = Ints("l1 l2 l3 l4 l5 l6 lH")
+Lab = [l1, l2, l3, l4, l5, l6, lH]
+
+en1 = BoolVector("en1", len(Var)*len(Lab))
+ex1 = BoolVector("ex1", len(Var)*len(Lab))
+en2 = BoolVector("en2", len(Var)*len(Lab))
+ex2 = BoolVector("ex2", len(Var)*len(Lab))
+en3 = BoolVector("en3", len(Var)*len(Lab))
+ex3 = BoolVector("ex3", len(Var)*len(Lab))
+en4 = BoolVector("en4", len(Var)*len(Lab))
+ex4 = BoolVector("ex4", len(Var)*len(Lab))
+en5 = BoolVector("en5", len(Var)*len(Lab))
+ex5 = BoolVector("ex5", len(Var)*len(Lab))
+en6 = BoolVector("en6", len(Var)*len(Lab))
+ex6 = BoolVector("ex6", len(Var)*len(Lab))
+
+#-----------------------------
+# HELPER FUNCTIONS
+#-----------------------------
+
+# I think of `pairs` as a flattened 2d array, with Var being the first index,
+# and Lab the second. Thus the index in pairs is len(Lab)*Var + Lab
+def to_index(tuple):
+    v = Var.index(tuple[0])
+    l = Lab.index(tuple[1])
+    return v*len(Lab) + l
+
+# Shorthand for above function
+def I(v,l):
+    return to_index((v,l))
+
 def union(lists):
     #Union of many sets
     if len(lists) < 2:
@@ -25,58 +59,40 @@ def union(lists):
         memory.append(l)
     return reduce((lambda l1, l2: u(l1, l2)), memory)
 
-# Lab = EnumSort("Lab", ["l1", "l2", "l3", "l4", "l5", "l6", "l?"])
-
-# En1
-# En1 = Function("En1", Var, Lab, BoolSort())
-
-x, y, z = Ints("x y z")
-Var = [x, y, z]
-
-l1, l2, l3, l4, l5, l6, lH = Ints("l1 l2 l3 l4 l5 l6 lH")
-Lab = [l1, l2, l3, l4, l5, l6, lH]
-
-lab = IntVector("lab", len(Lab))
-
-Pair = Datatype("Pair")
-Pair.declare("Pair", ("v", IntSort()), ("l", IntSort()))
-Pair = Pair.create()
+#-----------------------------
+# SATISFIABLE FUNCTIONS
+#-----------------------------
 
 
-
-#Concise syntax for creating a new Pair/Tuple of (Var, Lab)
-def P(v, l):
-    return Pair.Pair(v,l)
-
-#Since I am using IntSorts, I need to limit my ints to only the ones I define in Pair and List
-def only_allowed_vl(lists):
-    pairs = [P(v, l) for v in Var for l in Lab]
-    length = len(pairs)
-    lists.append(pairs)
-    U = union(lists)
-    return length == len(U)
-
-def contains(list, pair):
-    for l in list:
-        if l == pair:
-            return True
-    return False
 
 def En1(en1):
-    #En1 = {(x,?),(y,?),(z,?)}
-    x = y = z = False
-    print en1
-    return True
+    return And(
+        Not(en1[I(x, l1)]),
+        Not(en1[I(x, l2)]),
+        Not(en1[I(x, l3)]),
+        Not(en1[I(x, l4)]),
+        Not(en1[I(x, l5)]),
+        Not(en1[I(x, l6)]),
+        (en1[I(x, lH)]),
+        Not(en1[I(y, l1)]),
+        Not(en1[I(y, l2)]),
+        Not(en1[I(y, l3)]),
+        Not(en1[I(y, l4)]),
+        Not(en1[I(y, l5)]),
+        Not(en1[I(y, l6)]),
+        (en1[I(y, lH)]),
+        Not(en1[I(z, l1)]),
+        Not(en1[I(z, l2)]),
+        Not(en1[I(z, l3)]),
+        Not(en1[I(z, l4)]),
+        Not(en1[I(z, l5)]),
+        Not(en1[I(z, l6)]),
+        (en1[I(z, lH)]),
+    )
 
-# all = [en1, en2, en3, en4, en5, en6, ex1, ex2, ex3, ex4, ex5, ex6]
-
-# Example_pair = Pair.Pair(x,lH)
-# Bad_pair = Pair.Pair(2,22)
-#
-# print only_allowed_vl([[Example_pair],[Example_pair]])
 
 s = Solver()
 
-s.add()
-print s.check(contains(test,P(1,2)))
-# print s.model()
+s.add(En1(en1))
+print s.check()
+print s.model()
