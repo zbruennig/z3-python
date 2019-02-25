@@ -55,28 +55,20 @@ def from_index(n):
 def R(n):
     return from_index(n)
 
-#
+# Returns True if the pair at index n has Var v, or False otherwise
 def has_v(v,n):
     i = Var.index(v)
     min = len(Lab)*i
     max = len(Lab)*(i+1) - 1
     return min <= n <= max
 
-def union(lists):
-    #Union of many bool sets
-    if len(lists) < 2:
-        return lists
-    def u(l1, l2):
-        list = l1
-        for t in l2:
-            if not t in list:
-                list.append(t)
-        return list
-    #New list created so this function is immutable
-    memory = [[]]
-    for l in lists:
-        memory.append(l)
-    return reduce((lambda l1, l2: u(l1, l2)), memory)
+# Returns True if the pair at index n has Lab l, or False otherwise
+def has_l(l,n):
+    i = Lab.index(l)
+    return n % len(Lab) == i
+
+def union(*bools):
+    return Or(bools)
 
 def print_model(m):
     includes = {}
@@ -145,10 +137,9 @@ for i in range(ln):
 s.add(And(r))
 
 # En3
-# TODO update for proper union() call. Update union
 r = []
 for i in range(ln):
-    r.append(en3[i] == Or(ex2[i], ex5[i]))
+    r.append(en3[i] == union(ex2[i], ex5[i]))
 s.add(And(r))
 
 # Ex3
