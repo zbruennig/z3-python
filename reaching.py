@@ -203,8 +203,8 @@ for i in range(ln):
 s.add(And(r))
 
 # Question 4
-xH = I(x, lH)
-s.add(Not(ex6[xH]))
+# xH = I(x, lH)
+# s.add(Not(ex6[xH]))
 
 if s.check() == sat:
     print_model(s.model())
