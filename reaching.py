@@ -202,6 +202,11 @@ for i in range(ln):
         r.append(ex6[i] == en6[i])
 s.add(And(r))
 
+# Question 4
+xH = I(x, lH)
+s.add(Not(ex6[xH]))
 
 if s.check() == sat:
     print_model(s.model())
+else:
+    print s.check()
