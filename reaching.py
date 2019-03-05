@@ -135,49 +135,54 @@ def print_model(m):
 # Basic structure adapted from:
 # https://gist.github.com/shahril96/6541420e976fd5d9876ce66615b11e64
 #-----------------------------
-s = Solver()
 
-def initialize():
+# All equations are mutable lists, we can pass them around as we please!
+
+en = [
+    None,
+    (en1, ex1),
+    (en2, ex2),
+    (en3, ex3),
+    (en4, ex4),
+    (en5, ex5),
+    (en6, ex6)
+    ]
+
+def initialize(equation):
+    for i in range(ln):
+        if i % len(Lab) == len(Lab)-1: # (_,l?)
+            r.append(equation[i] == True)
+        else:
+            r.append(equation[i] == False)
+
+def assignment(var, lab, eq_pair):
+    for i in range(ln):
+        if has_v(var, i):
+            if i == I(var, lab):
+                r.append(en[eq_pair][1][i] == True)
+            else:
+                r.append(en[eq_pair][1][i] == False)
+        else:
+            r.append(en[eq_pair][1][i] == en[eq_pair][0][i])
+
+def conditional(equation):
     return None
 
-def assignment(lab, var, equation):
-    return None
-
-def conditional():
-    return None
-
-def loop():
+def loop(equation):
     return None
 
 def En1():
-    for i in range(ln):
-        if i % len(Lab) == len(Lab)-1: # (_,l?)
-            r.append(en1[i] == True)
-        else:
-            r.append(en1[i] == False)
+    initialize(en1)
 
 def Ex1():
-    for i in range(ln):
-        if has_v(y, i):
-            if i == I(y, l1):
-                r.append(ex1[i] == True)
-            else:
-                r.append(ex1[i] == False)
-        else:
-            r.append(ex1[i] == en1[i])
+    assignment(y, l1, 1)
+
 def En2():
     for i in range(ln):
         r.append(en2[i] == ex1[i])
 
 def Ex2():
-    for i in range(ln):
-        if has_v(z, i):
-            if i == I(z, l2):
-                r.append(ex2[i] == True)
-            else:
-                r.append(ex2[i] == False)
-        else:
-            r.append(ex2[i] == en2[i])
+    assignment(z, l2, 2)
 
 def En3():
     for i in range(ln):
@@ -192,44 +197,24 @@ def En4():
         r.append(en4[i] == ex3[i])
 
 def Ex4():
-    for i in range(ln):
-        if has_v(z, i):
-            if i == I(z, l4):
-                r.append(ex4[i] == True)
-            else:
-                r.append(ex4[i] == False)
-        else:
-            r.append(ex4[i] == en4[i])
+    assignment(z, l4, 4)
 
 def En5():
     for i in range(ln):
         r.append(en5[i] == ex4[i])
 
 def Ex5():
-    for i in range(ln):
-        if has_v(y, i):
-            if i == I(y, l5):
-                r.append(ex5[i] == True)
-            else:
-                r.append(ex5[i] == False)
-        else:
-            r.append(ex5[i] == en5[i])
+    assignment(y, l5, 5)
 
 def En6():
     for i in range(ln):
         r.append(en6[i] == ex3[i])
 
 def Ex6():
-    for i in range(ln):
-        if has_v(y, i):
-            if i == I(y, l6):
-                r.append(ex6[i] == True)
-            else:
-                r.append(ex6[i] == False)
-        else:
-            r.append(ex6[i] == en6[i])
+    assignment(y, l6, 6)
 
 functions = [En1, Ex1, En2, Ex2, En3, Ex3, En4, Ex4, En5, Ex5, En6, Ex6]
+s = Solver()
 
 for f in functions:
     r = []
