@@ -9,47 +9,6 @@ while 1<Y [3] do
 Y := 0 [6]
 """
 
-"""
-    EECS 742 - Z3 Reaching Modeling
-
-    Zachary Bruennig
-    https://github.com/zbruennig/z3-python
-
-    !Important
-    Execute this program using python 2!!
-    It will not compile with python 3 due to differences in how each language handles lambdas.
-
-    This program outputs the following:
-
-    EN1: [(x, ?), (y, ?), (z, ?)]
-    EX1: [(x, ?), (y, 1), (z, ?)]
-    EN2: [(x, ?), (y, 1), (z, ?)]
-    EX2: [(x, ?), (y, 1), (z, 2)]
-    EN3: [(x, ?), (y, 1), (y, 5), (z, 2), (z, 4)]
-    EX3: [(x, ?), (y, 1), (y, 5), (z, 2), (z, 4)]
-    EN4: [(x, ?), (y, 1), (y, 5), (z, 2), (z, 4)]
-    EX4: [(x, ?), (y, 1), (y, 5), (z, 4)]
-    EN5: [(x, ?), (y, 1), (y, 5), (z, 4)]
-    EX5: [(x, ?), (y, 5), (z, 4)]
-    EN6: [(x, ?), (y, 1), (y, 5), (z, 2), (z, 4)]
-    EX6: [(x, ?), (y, 6), (z, 2), (z, 4)]
-
-    From this output, the following questions can be answered:
-    1) X has not been initialized at the end of the program
-        The end of the program is EX6, and in this reaching definition the only label for X is ?
-    2) The assignment of Z at either label 2 or 4 may reach label 6
-        In EX6, the pairs (z, 2) and (z, 4) are present.
-    3) The assignment of Z at label 2 does not reach label 5
-        In neither EN5 nor EX5 does the pair (z, 2) appear.
-    4) There is no model where X has been assigned before program exit
-        By adding the following condition to our SAT problem,
-        asserting that (x, ?) must not be present in EX6,
-         we can show this is true.
-
-         xH = I(x, lH)
-         s.add(Not(ex6[xH]))
-"""
-
 x, y, z = Ints("x y z")
 Var = [x, y, z]
 
@@ -213,6 +172,10 @@ def En6():
 
 def Ex6():
     assignment(y, l6)
+
+#-----------------------------
+# Driver code
+#-----------------------------
 
 functions = [En1, Ex1, En2, Ex2, En3, Ex3, En4, Ex4, En5, Ex5, En6, Ex6]
 s = Solver()
