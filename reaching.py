@@ -9,6 +9,47 @@ while 1<Y [3] do
 Y := 0 [6]
 """
 
+"""
+    EECS 742 - Z3 Reaching Modeling
+
+    Zachary Bruennig
+    https://github.com/zbruennig/z3-python
+
+    !Important
+    Execute this program using python 2!!
+    It will not compile with python 3 due to differences in how each language handles lambdas.
+
+    This program outputs the following:
+
+    EN1: [(x, ?), (y, ?), (z, ?)]
+    EX1: [(x, ?), (y, 1), (z, ?)]
+    EN2: [(x, ?), (y, 1), (z, ?)]
+    EX2: [(x, ?), (y, 1), (z, 2)]
+    EN3: [(x, ?), (y, 1), (y, 5), (z, 2), (z, 4)]
+    EX3: [(x, ?), (y, 1), (y, 5), (z, 2), (z, 4)]
+    EN4: [(x, ?), (y, 1), (y, 5), (z, 2), (z, 4)]
+    EX4: [(x, ?), (y, 1), (y, 5), (z, 4)]
+    EN5: [(x, ?), (y, 1), (y, 5), (z, 4)]
+    EX5: [(x, ?), (y, 5), (z, 4)]
+    EN6: [(x, ?), (y, 1), (y, 5), (z, 2), (z, 4)]
+    EX6: [(x, ?), (y, 6), (z, 2), (z, 4)]
+
+    From this output, the following questions can be answered:
+    1) X has not been initialized at the end of the program
+        The end of the program is EX6, and in this reaching definition the only label for X is ?
+    2) The assignment of Z at either label 2 or 4 may reach label 6
+        In EX6, the pairs (z, 2) and (z, 4) are present.
+    3) The assignment of Z at label 2 does not reach label 5
+        In neither EN5 nor EX5 does the pair (z, 2) appear.
+    4) There is no model where X has been assigned before program exit
+        By adding the following condition to our SAT problem,
+        asserting that (x, ?) must not be present in EX6,
+         we can show this is true.
+
+         xH = I(x, lH)
+         s.add(Not(ex6[xH]))
+"""
+
 x, y, z = Ints("x y z")
 Var = [x, y, z]
 
@@ -97,114 +138,92 @@ def print_model(m):
 s = Solver()
 
 # En1
-r = [] # short for rules
-for i in range(ln):
-    if i % len(Lab) == 6: # (_,l?)
-        r.append(en1[i] == True)
-    else:
-        r.append(en1[i] == False)
-s.add(And(r))
-
-
-# Ex1
-r = []
-for i in range(ln):
-    if has_v(y, i):
-        if i == I(y, l1):
-            r.append(ex1[i] == True)
+def En1():
+    for i in range(ln):
+        if i % len(Lab) == 6: # (_,l?)
+            r.append(en1[i] == True)
         else:
-            r.append(ex1[i] == False)
-    else:
-        r.append(ex1[i] == en1[i])
-s.add(And(r))
+            r.append(en1[i] == False)
 
-# En2
-r = []
-for i in range(ln):
-    r.append(en2[i] == ex1[i])
-s.add(And(r))
-
-# Ex2
-r = []
-for i in range(ln):
-    if has_v(z, i):
-        if i == I(z, l2):
-            r.append(ex2[i] == True)
+def Ex1():
+    for i in range(ln):
+        if has_v(y, i):
+            if i == I(y, l1):
+                r.append(ex1[i] == True)
+            else:
+                r.append(ex1[i] == False)
         else:
-            r.append(ex2[i] == False)
-    else:
-        r.append(ex2[i] == en2[i])
-s.add(And(r))
+            r.append(ex1[i] == en1[i])
+def En2():
+    for i in range(ln):
+        r.append(en2[i] == ex1[i])
 
-# En3
-r = []
-for i in range(ln):
-    r.append(en3[i] == union(ex2[i], ex5[i]))
-s.add(And(r))
-
-# Ex3
-r = []
-for i in range(ln):
-    r.append(ex3[i] == en3[i])
-s.add(And(r))
-
-# En4
-En4 = []
-for i in range(ln):
-    En4.append(en4[i] == ex3[i])
-s.add(And(En4))
-
-# Ex4
-r = []
-for i in range(ln):
-    if has_v(z, i):
-        if i == I(z, l4):
-            r.append(ex4[i] == True)
+def Ex2():
+    for i in range(ln):
+        if has_v(z, i):
+            if i == I(z, l2):
+                r.append(ex2[i] == True)
+            else:
+                r.append(ex2[i] == False)
         else:
-            r.append(ex4[i] == False)
-    else:
-        r.append(ex4[i] == en4[i])
-s.add(And(r))
+            r.append(ex2[i] == en2[i])
 
-# En5
-r = []
-for i in range(ln):
-    r.append(en5[i] == ex4[i])
-s.add(And(r))
+def En3():
+    for i in range(ln):
+        r.append(en3[i] == union(ex2[i], ex5[i]))
 
-# Ex5
-r = []
-for i in range(ln):
-    if has_v(y, i):
-        if i == I(y, l5):
-            r.append(ex5[i] == True)
+def Ex3():
+    for i in range(ln):
+        r.append(ex3[i] == en3[i])
+
+def En4():
+    for i in range(ln):
+        r.append(en4[i] == ex3[i])
+
+def Ex4():
+    for i in range(ln):
+        if has_v(z, i):
+            if i == I(z, l4):
+                r.append(ex4[i] == True)
+            else:
+                r.append(ex4[i] == False)
         else:
-            r.append(ex5[i] == False)
-    else:
-        r.append(ex5[i] == en5[i])
-s.add(And(r))
+            r.append(ex4[i] == en4[i])
 
-# En6
-r = []
-for i in range(ln):
-    r.append(en6[i] == ex3[i])
-s.add(And(r))
+def En5():
+    for i in range(ln):
+        r.append(en5[i] == ex4[i])
 
-# Ex6
-r = []
-for i in range(ln):
-    if has_v(y, i):
-        if i == I(y, l6):
-            r.append(ex6[i] == True)
+def Ex5():
+    for i in range(ln):
+        if has_v(y, i):
+            if i == I(y, l5):
+                r.append(ex5[i] == True)
+            else:
+                r.append(ex5[i] == False)
         else:
-            r.append(ex6[i] == False)
-    else:
-        r.append(ex6[i] == en6[i])
-s.add(And(r))
+            r.append(ex5[i] == en5[i])
 
-# Question 4
-# xH = I(x, lH)
-# s.add(Not(ex6[xH]))
+def En6():
+    for i in range(ln):
+        r.append(en6[i] == ex3[i])
+
+def Ex6():
+    for i in range(ln):
+        if has_v(y, i):
+            if i == I(y, l6):
+                r.append(ex6[i] == True)
+            else:
+                r.append(ex6[i] == False)
+        else:
+            r.append(ex6[i] == en6[i])
+
+functions = [En1, En2, Ex1, Ex2, En3, Ex3, En4, Ex4, En5, Ex5, En6, Ex6]
+
+for f in functions:
+    r = []
+    f()
+    s.add(And(r))
 
 if s.check() == sat:
     print_model(s.model())
