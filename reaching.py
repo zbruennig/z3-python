@@ -155,7 +155,8 @@ def initialize(equation):
         else:
             r.append(equation[i] == False)
 
-def assignment(var, lab, eq_pair):
+def assignment(var, lab):
+    eq_pair = Lab.index(lab) + 1
     for i in range(ln):
         if has_v(var, i):
             if i == I(var, lab):
@@ -175,14 +176,14 @@ def En1():
     initialize(en1)
 
 def Ex1():
-    assignment(y, l1, 1)
+    assignment(y, l1)
 
 def En2():
     for i in range(ln):
         r.append(en2[i] == ex1[i])
 
 def Ex2():
-    assignment(z, l2, 2)
+    assignment(z, l2)
 
 def En3():
     for i in range(ln):
@@ -197,21 +198,21 @@ def En4():
         r.append(en4[i] == ex3[i])
 
 def Ex4():
-    assignment(z, l4, 4)
+    assignment(z, l4)
 
 def En5():
     for i in range(ln):
         r.append(en5[i] == ex4[i])
 
 def Ex5():
-    assignment(y, l5, 5)
+    assignment(y, l5)
 
 def En6():
     for i in range(ln):
         r.append(en6[i] == ex3[i])
 
 def Ex6():
-    assignment(y, l6, 6)
+    assignment(y, l6)
 
 functions = [En1, Ex1, En2, Ex2, En3, Ex3, En4, Ex4, En5, Ex5, En6, Ex6]
 s = Solver()
