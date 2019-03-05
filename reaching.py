@@ -137,10 +137,21 @@ def print_model(m):
 #-----------------------------
 s = Solver()
 
-# En1
+def initialize():
+    return None
+
+def assignment(lab, var, equation):
+    return None
+
+def conditional():
+    return None
+
+def loop():
+    return None
+
 def En1():
     for i in range(ln):
-        if i % len(Lab) == 6: # (_,l?)
+        if i % len(Lab) == len(Lab)-1: # (_,l?)
             r.append(en1[i] == True)
         else:
             r.append(en1[i] == False)
@@ -218,7 +229,7 @@ def Ex6():
         else:
             r.append(ex6[i] == en6[i])
 
-functions = [En1, En2, Ex1, Ex2, En3, Ex3, En4, Ex4, En5, Ex5, En6, Ex6]
+functions = [En1, Ex1, En2, Ex2, En3, Ex3, En4, Ex4, En5, Ex5, En6, Ex6]
 
 for f in functions:
     r = []
