@@ -15,20 +15,20 @@ Var = [x, y, z]
 l1, l2, l3, l4, l5, l6, lH = Ints("1 2 3 4 5 6 ?")
 Lab = [l1, l2, l3, l4, l5, l6, lH]
 
-en1 = BoolVector("en1", len(Var)*len(Lab))
-ex1 = BoolVector("ex1", len(Var)*len(Lab))
-en2 = BoolVector("en2", len(Var)*len(Lab))
-ex2 = BoolVector("ex2", len(Var)*len(Lab))
-en3 = BoolVector("en3", len(Var)*len(Lab))
-ex3 = BoolVector("ex3", len(Var)*len(Lab))
-en4 = BoolVector("en4", len(Var)*len(Lab))
-ex4 = BoolVector("ex4", len(Var)*len(Lab))
-en5 = BoolVector("en5", len(Var)*len(Lab))
-ex5 = BoolVector("ex5", len(Var)*len(Lab))
-en6 = BoolVector("en6", len(Var)*len(Lab))
-ex6 = BoolVector("ex6", len(Var)*len(Lab))
+ln = len(Var)*len(Lab)
 
-ln = len(en1)
+en1 = BoolVector("en1", ln)
+ex1 = BoolVector("ex1", ln)
+en2 = BoolVector("en2", ln)
+ex2 = BoolVector("ex2", ln)
+en3 = BoolVector("en3", ln)
+ex3 = BoolVector("ex3", ln)
+en4 = BoolVector("en4", ln)
+ex4 = BoolVector("ex4", ln)
+en5 = BoolVector("en5", ln)
+ex5 = BoolVector("ex5", ln)
+en6 = BoolVector("en6", ln)
+ex6 = BoolVector("ex6", ln)
 
 #-----------------------------
 # HELPER FUNCTIONS
@@ -67,7 +67,7 @@ def has_l(l,n):
     i = Lab.index(l)
     return n % len(Lab) == i
 
-def union(*bools):
+def union(bools):
     return Or(bools)
 
 def print_model(m):
@@ -114,6 +114,13 @@ def initialize(equation):
         else:
             r.append(equation[i] == False)
 
+def predecessors(lab, *pred):
+    eq_pair = Lab.index(lab) + 1
+    exits = map((lambda x: enex[x][1]), pred)
+    for i in range(ln):
+        preds = map((lambda x: x[i]), exits)
+        r.append(enex[eq_pair][0][i] == union(preds))
+
 def assignment(var, lab):
     eq_pair = Lab.index(lab) + 1
     for i in range(ln):
@@ -130,7 +137,6 @@ def non_assignment(lab):
     for i in range(ln):
         r.append(enex[eq_pair][1][i] == enex[eq_pair][0][i])
 
-
 def conditional(equation):
     return None
 
@@ -144,36 +150,31 @@ def Ex1():
     assignment(y, l1)
 
 def En2():
-    for i in range(ln):
-        r.append(en2[i] == ex1[i])
+    predecessors(l2, 1)
 
 def Ex2():
     assignment(z, l2)
 
 def En3():
-    for i in range(ln):
-        r.append(en3[i] == union(ex2[i], ex5[i]))
+    predecessors(l3, 2, 5)
 
 def Ex3():
     non_assignment(l3)
 
 def En4():
-    for i in range(ln):
-        r.append(en4[i] == ex3[i])
+    predecessors(l4, 3)
 
 def Ex4():
     assignment(z, l4)
 
 def En5():
-    for i in range(ln):
-        r.append(en5[i] == ex4[i])
+    predecessors(l5, 4)
 
 def Ex5():
     assignment(y, l5)
 
 def En6():
-    for i in range(ln):
-        r.append(en6[i] == ex3[i])
+    predecessors(l6, 3)
 
 def Ex6():
     assignment(y, l6)
