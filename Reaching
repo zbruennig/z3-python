@@ -1,3 +1,5 @@
 #!/bin/bash
 
 cp reaching.py reaching2.py
+
+rm reaching2.py

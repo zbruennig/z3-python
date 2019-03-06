@@ -97,7 +97,7 @@ def print_model(m):
 
 # All equations are mutable lists, we can pass them around as we please!
 
-en = [
+enex = [
     None,
     (en1, ex1),
     (en2, ex2),
@@ -119,11 +119,17 @@ def assignment(var, lab):
     for i in range(ln):
         if has_v(var, i):
             if i == I(var, lab):
-                r.append(en[eq_pair][1][i] == True)
+                r.append(enex[eq_pair][1][i] == True)
             else:
-                r.append(en[eq_pair][1][i] == False)
+                r.append(enex[eq_pair][1][i] == False)
         else:
-            r.append(en[eq_pair][1][i] == en[eq_pair][0][i])
+            r.append(enex[eq_pair][1][i] == enex[eq_pair][0][i])
+
+def non_assignment(lab):
+    eq_pair = Lab.index(lab) + 1
+    for i in range(ln):
+        r.append(enex[eq_pair][1][i] == enex[eq_pair][0][i])
+
 
 def conditional(equation):
     return None
@@ -149,8 +155,7 @@ def En3():
         r.append(en3[i] == union(ex2[i], ex5[i]))
 
 def Ex3():
-    for i in range(ln):
-        r.append(ex3[i] == en3[i])
+    non_assignment(l3)
 
 def En4():
     for i in range(ln):
