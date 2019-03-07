@@ -3,7 +3,8 @@ z3/
 
 *.DS_Store
 *.cmake
-*.txt
+CMakeCache.txt
+CMakeLists.txt
 
 example.py
 example2.py
