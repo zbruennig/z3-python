@@ -54,38 +54,38 @@ class Bexp(Equality):
 
 # Next we focus on statements, which can contain both arithmetic and boolean expressions.
 # There are four kinds of statements: assignment, compound, conditional and loops.
-class AssignStatement(Statement):
+class Assignment(Statement):
     def __init__(self, name, aexp):
         self.name = name
         self.aexp = aexp
 
     def __repr__(self):
-        return 'AssignStatement(%s, %s)' % (self.name, self.aexp)
+        return 'Assignment(%s, %s)' % (self.name, self.aexp)
 
     def eval(self, env):
         value = self.aexp.eval(env)
         env[self.name] = value
 
-class CompoundStatement(Statement):
+class Sequence(Statement):
     def __init__(self, first, second):
         self.first = first
         self.second = second
 
     def __repr__(self):
-        return 'CompoundStatement(%s, %s)' % (self.first, self.second)
+        return 'Sequence(%s, %s)' % (self.first, self.second)
 
     def eval(self, env):
         self.first.eval(env)
         self.second.eval(env)
 
-class IfStatement(Statement):
+class Ite(Statement):
     def __init__(self, condition, true_stmt, false_stmt):
         self.condition = condition
         self.true_stmt = true_stmt
         self.false_stmt = false_stmt
 
     def __repr__(self):
-        return 'IfStatement(%s, %s, %s)' % (self.condition, self.true_stmt, self.false_stmt)
+        return 'Ite(%s, %s, %s)' % (self.condition, self.true_stmt, self.false_stmt)
 
     def eval(self, env):
         condition_value = self.condition.eval(env)
@@ -95,13 +95,13 @@ class IfStatement(Statement):
             if self.false_stmt:
                 self.false_stmt.eval(env)
 
-class WhileStatement(Statement):
+class While(Statement):
     def __init__(self, condition, body):
         self.condition = condition
         self.body = body
 
     def __repr__(self):
-        return 'WhileStatement(%s, %s)' % (self.condition, self.body)
+        return 'While(%s, %s)' % (self.condition, self.body)
 
     def eval(self, env):
         condition_value = self.condition.eval(env)
