@@ -25,7 +25,6 @@ def create_ast(filename):
         sys.exit(1)
     # Build AST from parsed result to determine how to run target program
     ast = parse_result.value
-    print ast
     return ast
     """ BEYOND THIS POINT IS NO LONGER STATIC ANALYSIS """
     # print ast

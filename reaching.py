@@ -9,7 +9,6 @@ import generate
 # l1, l2, l3, l4, l5, l6, lH = Ints("1 2 3 4 5 6 ?")
 # Lab = [l1, l2, l3, l4, l5, l6, lH]
 #
-# ln = len(Var)*len(Lab)
 # #TODO these must be generated for every label
 # en1 = BoolVector("en1", ln)
 # ex1 = BoolVector("ex1", ln)
@@ -23,107 +22,7 @@ import generate
 # ex5 = BoolVector("ex5", ln)
 # en6 = BoolVector("en6", ln)
 # ex6 = BoolVector("ex6", ln)
-# #-----------------------------
-# # HELPER FUNCTIONS
-# #-----------------------------
-#
-# # I think of `pairs` as a flattened 2d array, with Var being the first index,
-# # and Lab the second. Thus the index in pairs is len(Lab)*Var + Lab
-# def to_index(tuple):
-#     v = Var.index(tuple[0])
-#     l = Lab.index(tuple[1])
-#     return v*len(Lab) + l
-#
-# # Shorthand for above function
-# def I(v,l):
-#     return to_index((v,l))
-#
-# # And the opposite way, return a (v,l) tuple from the index
-# def from_index(n):
-#     v = n // len(Lab)
-#     l = n % len(Lab)
-#     return (Var[v], Lab[l])
-#
-# # Shorthand for above function, short for reverse
-# def R(n):
-#     return from_index(n)
-#
-# # Returns True if the pair at index n has Var v, or False otherwise
-# def has_v(v,n):
-#     i = Var.index(v)
-#     min = len(Lab)*i
-#     max = len(Lab)*(i+1) - 1
-#     return min <= n <= max
-#
-# # Returns True if the pair at index n has Lab l, or False otherwise
-# def has_l(l,n):
-#     i = Lab.index(l)
-#     return n % len(Lab) == i
-#
-# def union(bools):
-#     return Or(bools)
-#
-# def print_model(m):
-#     includes = {}
-#     for k in m:
-#         if m[k]: #All the true values
-#             # Printer assumes z3 format of vectorName__index
-#             k = k.__str__()
-#             # This defaults to unicode, so for pretty printing we use ascii
-#             rc = k[0:k.find('_')].encode("ascii")
-#             index = k[k.find('_')+2:]
-#             pair = R(int(index))
-#             try:
-#                 includes[rc].append(pair)
-#             except:
-#                 includes[rc] = [pair]
-#     # Prints in a reasonable order to read
-#     for k,v in sorted(includes.items(), key=lambda (x,y): (x[2:], x[0:2])):
-#         print k.upper()+":",
-#         print sorted(v, key=lambda x: (x[0].__str__(), x[1].__str__()))
-#
-# #-----------------------------
-# # EN/EX forms, all features in our language follow one of these prototypes
-# #-----------------------------
-#
-# def initialize(equation):
-#     for i in range(ln):
-#         if i % len(Lab) == len(Lab)-1: # (_,l?)
-#             r.append(equation[i] == True)
-#         else:
-#             r.append(equation[i] == False)
-#
-# def predecessors(lab, *pred):
-#     eq_pair = Lab.index(lab) + 1
-#     exits = map((lambda x: enex[x][1]), pred)
-#     for i in range(ln):
-#         preds = map((lambda x: x[i]), exits)
-#         r.append(enex[eq_pair][0][i] == union(preds))
-#
-# def assignment(var, lab):
-#     eq_pair = Lab.index(lab) + 1
-#     for i in range(ln):
-#         if has_v(var, i):
-#             if i == I(var, lab):
-#                 r.append(enex[eq_pair][1][i] == True)
-#             else:
-#                 r.append(enex[eq_pair][1][i] == False)
-#         else:
-#             r.append(enex[eq_pair][1][i] == enex[eq_pair][0][i])
-#
-# def non_assignment(lab):
-#     eq_pair = Lab.index(lab) + 1
-#     for i in range(ln):
-#         r.append(enex[eq_pair][1][i] == enex[eq_pair][0][i])
-#
-# def conditional(equation):
-#     return None
-#
-# def loop(equation):
-#     return None
-#
-# s = Solver()
-# r = []
+
 # enex = [
 #     #TODO This must be generated for every label
 #     None,
@@ -150,11 +49,32 @@ import generate
 # assignment(z, l4)
 # assignment(y, l5)
 # assignment(y, l6)
-#
-# s.add(And(r))
-# if s.check() == sat:
-#     print_model(s.model())
-# else:
-#     print s.check()
 
-generate.ast("reaching.imp")
+if len(sys.argv) <= 1:
+    sys.stderr.write('usage: %s filename\n' % sys.argv[0])
+    sys.exit(1)
+else:
+    stmts = generate.labels(sys.argv[1])
+    labs = len(stmts) - 1
+    vars = []
+    for i in range(1, len(stmts)):
+        stmt = stmts[i]
+        var = stmt[2]
+        if var != None and var not in vars:
+            vars.append(var)
+    print stmts
+    print vars, labs
+
+    # Generate temp files
+
+    #DECLARE Vars
+    comma_separated = space_separated = ""
+    for v in vars:
+        comma_separated = comma_separated + v + ", "
+        space_separated = space_separated + v + " "
+    comma_separated = comma_separated[:len(comma_separated)-2]
+    space_separated = space_separated[:len(space_separated)-1]
+    contents = comma_separated + " = Ints(\"" + space_separated + "\")\n"
+    contents = contents + "Var = [" + comma_separated + "]"
+    f = open("vars.txt", "w")
+    f.write(contents)

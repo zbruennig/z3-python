@@ -1,0 +1,11 @@
+N := 151;
+A := N;
+Count := 0;
+while A > 1 do
+  if A / 2 = 0 then
+    A := A / 2
+  else
+    A := 3 * A + 1
+  end;
+  Count := Count + 1
+end

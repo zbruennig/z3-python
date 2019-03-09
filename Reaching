@@ -1,9 +1,8 @@
 #!/bin/bash
 
-cp reaching.py reaching2.py
-# cat $1
-python reaching2.py
-rm reaching2.py
+python reaching.py $1
 
 rm IMP/*.pyc
 rm generate.pyc
+
+rm vars.txt

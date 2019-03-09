@@ -1,0 +1,18 @@
+A := 1;
+B := 2;
+C := A + B;
+D := 3 * C + A;
+while A > B do
+  if C = A + B then
+    B := B + D;
+    D := 2 * D
+  else
+    if C > A + B then
+      C := C - 1
+    else
+      C := C + 1
+    end
+  end;
+  A := 3
+end;
+D := 0
