@@ -144,17 +144,19 @@ enex = [
     ]
 
 #TODO this must be generated, possibly without comments
+# EN
 initialize(en1)
-assignment(y, l1)
 predecessors(l2, 1)
-assignment(z, l2)
 predecessors(l3, 2, 5)
-non_assignment(l3)
 predecessors(l4, 3)
-assignment(z, l4)
 predecessors(l5, 4)
-assignment(y, l5)
 predecessors(l6, 3)
+# EX
+assignment(y, l1)
+assignment(z, l2)
+non_assignment(l3)
+assignment(z, l4)
+assignment(y, l5)
 assignment(y, l6)
 
 s.add(And(r))
