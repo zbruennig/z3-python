@@ -2,40 +2,6 @@ from z3 import *
 import generate
 import sys
 
-
-# #TODO these must be generated for every variable
-# x, y, z = Ints("x y z")
-# Var = [x, y, z]
-#
-# #TODO these must be generated for every label
-# l1, l2, l3, l4, l5, l6, lH = Ints("1 2 3 4 5 6 ?")
-# Lab = [l1, l2, l3, l4, l5, l6, lH]
-#
-# #TODO these must be generated for every label
-# en1 = BoolVector("en1", ln)
-# ex1 = BoolVector("ex1", ln)
-# en2 = BoolVector("en2", ln)
-# ex2 = BoolVector("ex2", ln)
-# en3 = BoolVector("en3", ln)
-# ex3 = BoolVector("ex3", ln)
-# en4 = BoolVector("en4", ln)
-# ex4 = BoolVector("ex4", ln)
-# en5 = BoolVector("en5", ln)
-# ex5 = BoolVector("ex5", ln)
-# en6 = BoolVector("en6", ln)
-# ex6 = BoolVector("ex6", ln)
-
-# enex = [
-#     #TODO This must be generated for every label
-#     None,
-#     (en1, ex1),
-#     (en2, ex2),
-#     (en3, ex3),
-#     (en4, ex4),
-#     (en5, ex5),
-#     (en6, ex6)
-#     ]
-#
 # #TODO this must be generated, possibly without comments
 # # EN
 # initialize(en1)
@@ -64,8 +30,7 @@ else:
         var = stmt[2]
         if var != None and var not in vars:
             vars.append(var)
-    # print stmts
-    # print vars, labs
+    print stmts
 
     # Generate temp files
 
@@ -110,15 +75,33 @@ else:
     f.write(contents)
 
     #DECLARE enex
-    contents = "enex =  [\n\tNone\n"
-    # for i in range(1, labs+1):
-    contents = contents + "\n\t]"
+    contents = "enex = [\n\tNone"
+    for i in range(1, labs+1):
+        contents = contents + ",\n\t(en%s, ex%s)"%(str(i), str(i))
+    contents = contents + "\n]\n"
     f = open("enex.txt", "w")
     f.write(contents)
 
 
+    statements = [
+        "initialize(en1)",
+        "predecessors(l2, 1)",
+        "predecessors(l4, 3)",
+        "predecessors(l3, 2, 5)",
+        "predecessors(l5, 4)",
+        "predecessors(l6, 3)",
+        "assignment(Y, l1)",
+        "assignment(Z, l2)",
+        "non_assignment(l3)",
+        "assignment(Z, l4)",
+        "assignment(Y, l5)",
+        "assignment(Y, l6)"
+    ]
+    #Logic to build statements
     #DECLARE-statements
     #Consider while/if at start
-    contents = "#Statements go here!"
+    contents = ""
+    for s in statements:
+        contents = contents + "%s\n"%(s)
     f = open("statements.txt", "w")
     f.write(contents)

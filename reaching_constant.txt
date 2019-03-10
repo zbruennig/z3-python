@@ -55,6 +55,27 @@ def print_model(m):
         print k.upper()+":",
         print sorted(v, key=lambda x: (x[0].__str__(), x[1].__str__()))
 
+def write_model(m, file):
+    includes = {}
+    for k in m:
+        if m[k]: #All the true values
+            # Printer assumes z3 format of vectorName__index
+            k = k.__str__()
+            # This defaults to unicode, so for pretty printing we use ascii
+            rc = k[0:k.find('_')].encode("ascii")
+            index = k[k.find('_')+2:]
+            pair = R(int(index))
+            try:
+                includes[rc].append(pair)
+            except:
+                includes[rc] = [pair]
+    # Prints in a reasonable order to read
+    f = open(file, "w")
+    for k,v in sorted(includes.items(), key=lambda (x,y): (x[2:], x[0:2])):
+        f.write(k.upper()+": ")
+        pairs = sorted(v, key=lambda x: (x[0].__str__(), x[1].__str__()))
+        f.write("%s\n"%(str(pairs)))
+
 def initialize(equation):
     for i in range(ln):
         if i % len(Lab) == len(Lab)-1: # (_,l?)
@@ -101,5 +122,6 @@ r = []
 s.add(And(r))
 if s.check() == sat:
     print_model(s.model())
+    write_model(s.model(), "model.txt")
 else:
     print s.check()

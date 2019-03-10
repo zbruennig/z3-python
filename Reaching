@@ -21,3 +21,4 @@ rm statements.txt
 rm execute.py-e
 
 python execute.py
+rm execute.py
