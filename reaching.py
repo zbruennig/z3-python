@@ -22,22 +22,54 @@ if len(sys.argv) <= 1:
     sys.stderr.write('usage: %s filename\n' % sys.argv[0])
     sys.exit(1)
 
+def make_predecessors(l, s, i, stack, just_popped):
+    #cur = (Lab-0, Type-1, Var-2, Parent-3)
+    if i > len(s) - 1:
+        return
+    cur = s[i]
+    if cur[1] == "Ite":
+        stack.append(("Ite", i))
+    elif cur[1] == "While":
+        stack.append(("While", i))
+    if i == 1:
+        return make_predecessors(l, s, i+1, stack, just_popped)
+    predecessors = []
+    prev = s[i-1]
+    if cur[3] == prev[3]:
+        predecessors.append(prev[0])
+    elif stack != []:
+        # TODO use just_popped, pop from stack?
+        predecessors.append(stack[-1][1])
+    print predecessors
+    #TODO stress out about if/while
+    command = "predecessors(l%s"%(str(i))
+    for p in predecessors:
+        command = command + ", %s"%(str(p))
+    command = command+")"
+    l.append(command)
+    make_predecessors(l, s, i+1, stack, just_popped)
+
+
 def build_statements(l, s):
     print s
+    #Consider while/if at start
+    # EN_i definitions
+    l.append("initialize(en1)")
+    # Work through predecessors for:
+    # Ite, While, Nested Statements, and Assignment
+    make_predecessors(l, s, 1, [], None)
+    # l.append("predecessors(l2, 1)")
+    # l.append("predecessors(l4, 3)")
+    # l.append("predecessors(l3, 2, 5)")
+    # l.append("predecessors(l5, 4)")
+    # l.append("predecessors(l6, 3)")
     # EX_i definitions
     for i in range(1, len(s)):
-        t = s[i]
-        if t[1] == "Assignment":
-            l.append("assignment(%s, l%s)"%(t[2], str(t[0])))
+        cur = s[i]
+        if cur[1] == "Assignment":
+            l.append("assignment(%s, l%s)"%(cur[2], str(cur[0])))
         else:
-            l.append("non_assignment(l%s)"%(str(t[0])))
-    #Consider while/if at start
-    l.append("initialize(en1)")
-    l.append("predecessors(l2, 1)")
-    l.append("predecessors(l4, 3)")
-    l.append("predecessors(l3, 2, 5)")
-    l.append("predecessors(l5, 4)")
-    l.append("predecessors(l6, 3)")
+            l.append("non_assignment(l%s)"%(str(cur[0])))
 
 stmts = generate.labels(sys.argv[1])
 labs = len(stmts) - 1

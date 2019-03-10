@@ -106,12 +106,6 @@ def non_assignment(lab):
     for i in range(ln):
         r.append(enex[eq_pair][1][i] == enex[eq_pair][0][i])
 
-def conditional(equation):
-    return None
-
-def loop(equation):
-    return None
-
 s = Solver()
 r = []
 
