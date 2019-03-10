@@ -1,5 +1,7 @@
 from z3 import *
 import generate
+import sys
+
 
 # #TODO these must be generated for every variable
 # x, y, z = Ints("x y z")
@@ -74,7 +76,38 @@ else:
         space_separated = space_separated + v + " "
     comma_separated = comma_separated[:len(comma_separated)-2]
     space_separated = space_separated[:len(space_separated)-1]
-    contents = comma_separated + " = Ints(\"" + space_separated + "\")\n"
-    contents = contents + "Var = [" + comma_separated + "]"
+    contents = "%s = Ints(\"%s\")\n"%(comma_separated, space_separated)
+    contents = contents + "Var = [%s]"%(comma_separated)
     f = open("vars.txt", "w")
     f.write(contents)
+
+    #DECLARE Labs
+    l_comma = []
+    l_space = []
+    for i in range(1, labs+1):
+        l_comma.append("l"+str(i))
+        l_space.append(str(i))
+    l_comma.append("lH")
+    l_space.append("?")
+    comma_separated = space_separated = ""
+    for l in l_comma:
+        comma_separated = comma_separated + l + ", "
+    for l in l_space:
+        space_separated = space_separated + l + " "
+    comma_separated = comma_separated[:len(comma_separated)-2]
+    space_separated = space_separated[:len(space_separated)-1]
+    contents = "%s = Ints(\"%s\")\n"%(comma_separated, space_separated)
+    contents = contents + "Lab = [%s]"%(comma_separated)
+    f = open("labs.txt", "w")
+    f.write(contents)
+
+    #DECLARE BoolVectors
+    contents = ""
+    for i in range(1, labs+1):
+        contents = contents + "en%s = BoolVector(\"en%s\", ln)\n"%(str(i), str(i))
+        contents = contents + "ex%s = BoolVector(\"ex%s\", ln)\n"%(str(i), str(i))
+    f = open("boolvectors.txt", "w")
+    f.write(contents)
+    #DECLARE enex
+
+    #DECLARE statements

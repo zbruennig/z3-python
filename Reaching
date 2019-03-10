@@ -5,4 +5,8 @@ python reaching.py $1
 rm IMP/*.pyc
 rm generate.pyc
 
-rm vars.txt
+cp reaching_constant.txt execute.py
+
+# rm vars.txt
+# rm labs.txt
+# rm boolvectors.txt
