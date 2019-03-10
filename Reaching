@@ -7,6 +7,17 @@ rm generate.pyc
 
 cp reaching_constant.txt execute.py
 
-# rm vars.txt
-# rm labs.txt
-# rm boolvectors.txt
+sed -i -e '/#DECLARE-Vars/r vars.txt' execute.py
+sed -i -e '/#DECLARE-Labs/r labs.txt' execute.py
+sed -i -e '/#DECLARE-BoolVectors/r boolvectors.txt' execute.py
+sed -i -e '/#DECLARE-enex/r enex.txt' execute.py
+sed -i -e '/#DECLARE-statements/r statements.txt' execute.py
+
+rm vars.txt
+rm labs.txt
+rm boolvectors.txt
+rm enex.txt
+rm statements.txt
+rm execute.py-e
+
+python execute.py

@@ -64,12 +64,12 @@ else:
         var = stmt[2]
         if var != None and var not in vars:
             vars.append(var)
-    print stmts
-    print vars, labs
+    # print stmts
+    # print vars, labs
 
     # Generate temp files
 
-    #DECLARE Vars
+    #DECLARE-Vars
     comma_separated = space_separated = ""
     for v in vars:
         comma_separated = comma_separated + v + ", "
@@ -81,7 +81,7 @@ else:
     f = open("vars.txt", "w")
     f.write(contents)
 
-    #DECLARE Labs
+    #DECLARE-Labs
     l_comma = []
     l_space = []
     for i in range(1, labs+1):
@@ -94,20 +94,31 @@ else:
         comma_separated = comma_separated + l + ", "
     for l in l_space:
         space_separated = space_separated + l + " "
-    comma_separated = comma_separated[:len(comma_separated)-2]
-    space_separated = space_separated[:len(space_separated)-1]
+    comma_separated = comma_separated[:-2]
+    space_separated = space_separated[:-1]
     contents = "%s = Ints(\"%s\")\n"%(comma_separated, space_separated)
-    contents = contents + "Lab = [%s]"%(comma_separated)
+    contents = contents + "Lab = [%s]\n"%(comma_separated)
     f = open("labs.txt", "w")
     f.write(contents)
 
-    #DECLARE BoolVectors
+    #DECLARE-BoolVectors
     contents = ""
     for i in range(1, labs+1):
         contents = contents + "en%s = BoolVector(\"en%s\", ln)\n"%(str(i), str(i))
         contents = contents + "ex%s = BoolVector(\"ex%s\", ln)\n"%(str(i), str(i))
     f = open("boolvectors.txt", "w")
     f.write(contents)
-    #DECLARE enex
 
-    #DECLARE statements
+    #DECLARE enex
+    contents = "enex =  [\n\tNone\n"
+    # for i in range(1, labs+1):
+    contents = contents + "\n\t]"
+    f = open("enex.txt", "w")
+    f.write(contents)
+
+
+    #DECLARE-statements
+    #Consider while/if at start
+    contents = "#Statements go here!"
+    f = open("statements.txt", "w")
+    f.write(contents)

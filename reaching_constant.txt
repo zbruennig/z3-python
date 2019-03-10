@@ -1,11 +1,11 @@
 from z3 import *
 
-[DECLARE Vars]
+#DECLARE-Vars
 
-[DECLARE Labs]
+#DECLARE-Labs
 
 ln = len(Var)*len(Lab)
-[DECLARE BoolVectors]
+#DECLARE-BoolVectors
 
 def to_index(tuple):
     v = Var.index(tuple[0])
@@ -92,9 +92,11 @@ def loop(equation):
     return None
 
 s = Solver()
+r = []
 
-[DECLARE enex]
-[DECLARE statements]
+#DECLARE-enex
+
+#DECLARE-statements
 
 s.add(And(r))
 if s.check() == sat:
