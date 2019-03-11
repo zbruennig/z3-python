@@ -2,21 +2,9 @@ from z3 import *
 import generate
 import sys
 
-# #TODO this must be generated, possibly without comments
-# # EN
-# initialize(en1)
-# predecessors(l2, 1)
+#TODO this must be generated, possibly without comments
+# EN
 # predecessors(l3, 2, 5)
-# predecessors(l4, 3)
-# predecessors(l5, 4)
-# predecessors(l6, 3)
-# # EX
-# assignment(y, l1)
-# assignment(z, l2)
-# non_assignment(l3)
-# assignment(z, l4)
-# assignment(y, l5)
-# assignment(y, l6)
 
 if len(sys.argv) <= 1:
     sys.stderr.write('usage: %s filename\n' % sys.argv[0])
@@ -41,6 +29,42 @@ def parents_changed(l1, l2):
         return l1[len(l2):], "-"
     return [], "="
 
+def find_t_e(accumulator, s, start, cond):
+    cond_t = str(cond)+"T"
+    cond_e = str(cond)+"E"
+    state = 0
+    search = else_loc = start
+    then_loc = -1
+    while search > 0:
+        stmt = s[search]
+        parents = stmt[3]
+        if cond_t in parents:
+            then_loc = search
+            break
+        search = search - 1
+    # Once we have the locations of the last statement in the Then and
+    # Else branches, we check to see if those are within a While loop
+    # or in a nested Ite statement, and deal with them accordingly
+    then_parents = s[then_loc][3]
+    then_index = then_parents.index(cond_t)
+    then_after = then_parents[then_index+1:]
+    if then_after == []:
+        accumulator.append(then_loc)
+    elif then_after[0][-1:] == "W":
+        accumulator.append(int(then_after[0][:-1]))
+    else:
+        find_t_e(accumulator, s, then_loc, int(then_after[0][:-1]))
+    else_parents = s[else_loc][3]
+    else_index = else_parents.index(cond_e)
+    # We offset by 1 to find all the nested structures within the Ite
+    else_after = else_parents[else_index+1:]
+    if else_after == []:
+        accumulator.append(else_loc)
+    elif else_after[0][-1:] == "W":
+        accumulator.append(int(else_after[0][:-1]))
+    else:
+        find_t_e(accumulator, s, else_loc, int(else_after[0][:-1]))
+
 def things_before(s, i):
     curr = s[i]
     prev = s[i-1]
@@ -58,54 +82,19 @@ def things_before(s, i):
         # Case of just a sequence of statements, no larger structure
         return [i-1]
     elif action == "-":
-        print diff, "-"
         # One or more parents were popped from the stack.
         # If this includes a While, then we need to add the condition label
-        # Of the while. However if this includes an Ite, we need to add
-        # Both branches, and we read the Parents list left to right,
-        # Starting with the outermost structure.
+        # of the while. However if this includes an Ite, we need to add from
+        # both branches and find the predecessor on each,
+        # Doing this we read the Parents list left to right to deal with nested
+        # structures, starting with the outermost.
         before = []
-
-        def find_t_e(start, cond, rest):
-            cond_t = str(cond)+"T"
-            cond_e = str(cond)+"E"
-            state = 0
-            search = else_loc = i-1
-            then_loc = -1
-            while search > 0:
-                stmt = s[search]
-                parents = stmt[3]
-                if cond_t in parents:
-                    then_loc = search
-                    break
-                search = search - 1
-            # Once we have the locations of the last statement in the Then and
-            # Else branches, we check to see if those are within a While loop
-            # or in a nested Ite statement, and deal with them accordingly
-            then_parents = s[then_loc][3]
-            then_index = then_parents.index(cond_t)
-            then_after = then_parents[then_index+1:]
-            if then_after == []:
-                before.append(then_loc)
-            elif then_after[0][-1:] == "W":
-                before.append(int(then_after[0][:-1]))
-            else:
-                find_t_e(then_loc+1, int(then_after[0][:-1]), then_after[1:])
-            else_parents = s[else_loc][3]
-            else_index = else_parents.index(cond_e)
-            else_after = else_parents[else_index+1:]
-            if else_after == []:
-                before.append(else_loc)
-            elif else_after[0][-1:] == "W":
-                before.append(int(else_after[0][:-1]))
-            else:
-                find_t_e(else_loc+1, int(else_after[0][:-1]), else_after[1:])
 
         if diff[0][-1:] == "W":
             before.append(int(diff[0][:-1]))
         else:
-            find_t_e(i, int(diff[0][:-1]), diff[1:])
-        print before
+            # It must have left an Ite
+            find_t_e(before, s, i-1, int(diff[0][:-1]))
         return before
 
     # The above block should cover all cases
@@ -114,8 +103,43 @@ def things_before(s, i):
     sys.exit(1)
 
 def ends_of_while(s, i):
+    # Careful of out of bounds errors!
+    # print s, len(s)
     curr = s[i]
-    return [1]
+    if curr[1] != "While":
+        return []
+    ends = []
+    token = str(i)+"W"
+    line = -1
+    for line in range(i+1, len(s)):
+        parents = s[line][3]
+        if token in parents:
+            pass
+        else:
+            line = line - 1
+            break
+    #s[line][1] MUST be assignment (or Skip, but that isn't defined yet)
+    end_parents = s[line][3]
+    if token in end_parents:
+        token_index = end_parents.index(token)
+        after = end_parents[token_index+1:]
+        # Based on nested structure, determine where to look
+        # Ends is either empty, contains a While, or an Else, never a Then
+        # It is impossible to have a While end in the middle of an Ite
+        if after == []:
+            ends.append(line)
+        elif after[0][-1:] == "W":
+            ends.append(int(after[0][:-1]))
+        elif after[0][-1:] == "E":
+            find_t_e(ends, s, line, int(after[0][:-1]))
+        else:
+            # Should never reach here!
+            sys.stderr.write("Unknown case %s found in ends_of_while"%after[0][-1:])
+        return ends
+    else:
+        # I'm not sure how/why but s[line] is not a child of s[i]. Error case.
+        sys.stderr.write("Cannot find child processes in %s of statement %s"%(line, i))
+        return []
 
 def make_predecessors(l, s, i):
     #curr = (Lab-0, Type-1, Var-2 [unused], Parents-3)
@@ -145,8 +169,7 @@ def make_predecessors(l, s, i):
 def build_statements(l, s):
     # EN_i definitions
     l.append("initialize(en1)")
-    # Work through predecessors for:
-    # Ite, While, Nested Statements, and Assignment
+    # Must consider special cases for Ites, Whiles, and nested structures
     make_predecessors(l, s, 1)
     # EX_i definitions
     for i in range(1, len(s)):
