@@ -2,10 +2,6 @@ from z3 import *
 import generate
 import sys
 
-#TODO this must be generated, possibly without comments
-# EN
-# predecessors(l3, 2, 5)
-
 if len(sys.argv) <= 1:
     sys.stderr.write('usage: %s filename\n' % sys.argv[0])
     sys.exit(1)
@@ -103,8 +99,6 @@ def things_before(s, i):
     sys.exit(1)
 
 def ends_of_while(s, i):
-    # Careful of out of bounds errors!
-    # print s, len(s)
     curr = s[i]
     if curr[1] != "While":
         return []

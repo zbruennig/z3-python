@@ -7,4 +7,5 @@ while N > 0 do
   A := B;
   B := C;
   N := N - 1
-end
+end;
+N := 0

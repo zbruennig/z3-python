@@ -1,6 +1,44 @@
 # z3-python
 EECS 742 (Static Analysis) - Code analysis done in z3py!
 
+### What do I do to run the program?
+```
+./Reaching <imp-file-to-evaluate>
+```
+
+Sample input:  
+```
+./Reaching examples/fibonacci.imp
+```
+
+Output:  
+```
+    EN1: [(A, ?), (B, ?), (C, ?), (N, ?)]
+    EX1: [(A, ?), (B, ?), (C, ?), (N, 1)]
+    EN2: [(A, ?), (B, ?), (C, ?), (N, 1)]
+    EX2: [(A, 2), (B, ?), (C, ?), (N, 1)]
+    EN3: [(A, 2), (B, ?), (C, ?), (N, 1)]
+    EX3: [(A, 2), (B, 3), (C, ?), (N, 1)]
+    EN4: [(A, 2), (B, 3), (C, ?), (N, 1)]
+    EX4: [(A, 2), (B, 3), (C, 4), (N, 1)]
+    EN5: [(A, 2), (A, 7), (B, 3), (B, 8), (C, 4), (C, 6), (N, 1), (N, 9)]
+    EX5: [(A, 2), (A, 7), (B, 3), (B, 8), (C, 4), (C, 6), (N, 1), (N, 9)]
+    EN6: [(A, 2), (A, 7), (B, 3), (B, 8), (C, 4), (C, 6), (N, 1), (N, 9)]
+    EX6: [(A, 2), (A, 7), (B, 3), (B, 8), (C, 6), (N, 1), (N, 9)]
+    EN7: [(A, 2), (A, 7), (B, 3), (B, 8), (C, 6), (N, 1), (N, 9)]
+    EX7: [(A, 7), (B, 3), (B, 8), (C, 6), (N, 1), (N, 9)]
+    EN8: [(A, 7), (B, 3), (B, 8), (C, 6), (N, 1), (N, 9)]
+    EX8: [(A, 7), (B, 8), (C, 6), (N, 1), (N, 9)]
+    EN9: [(A, 7), (B, 8), (C, 6), (N, 1), (N, 9)]
+    EX9: [(A, 7), (B, 8), (C, 6), (N, 9)]
+    EN10: [(A, 2), (A, 7), (B, 3), (B, 8), (C, 4), (C, 6), (N, 1), (N, 9)]
+    EX10: [(A, 2), (A, 7), (B, 3), (B, 8), (C, 4), (C, 6), (N, 10)]
+```
+
+Additionally, a file named model.txt will be created with this output in the main directory.
+
+*Note: The .imp extension on the file is not necessary; this program can be run on plaintext files, or any other type of file with readable characters. The examples in this repo use the .imp extension purely for distinguishing reasons; there is no special benefits beyond that.*
+
 ### What is static analysis?
 Static program analysis is the analysis of computer software that is performed without actually executing programs, in contrast with dynamic analysis, which is analysis performed on programs while they are executing.
 (Wikipedia)
