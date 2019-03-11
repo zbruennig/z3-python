@@ -80,8 +80,9 @@ def initialize(equation):
     for i in range(ln):
         if i % len(Lab) == len(Lab)-1: # (_,l?)
             r.append(equation[i] == True)
-        else:
-            r.append(equation[i] == False)
+            # We do not require other variables not to appear because of the
+            # case where the first statement is a WHILE, then it will
+            # potentially have defined predecessors
 
 def predecessors(lab, *pred):
     eq_pair = Lab.index(lab) + 1

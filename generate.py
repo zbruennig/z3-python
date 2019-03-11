@@ -2,6 +2,7 @@ from IMP import imp
 from copy import deepcopy
 
 def recursive_define(ast, stmts, parent):
+    # Parent is a stack of nested statements for the label, Ites and Whiles
     if isinstance(ast, imp.Sequence):
         recursive_define(ast.first, stmts, parent)
         recursive_define(ast.second, stmts, parent)
@@ -33,6 +34,5 @@ def define_statements(ast):
 
 def labels(filename):
     imp_ast = imp.create_ast(filename)
-    #CONSIDER NESTED WHILE/IFS
     statements = define_statements(imp_ast)
     return statements

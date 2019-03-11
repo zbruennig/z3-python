@@ -22,57 +22,132 @@ if len(sys.argv) <= 1:
     sys.stderr.write('usage: %s filename\n' % sys.argv[0])
     sys.exit(1)
 
-def make_predecessors(l, s, i, stack, just_popped):
-    #cur = (Lab-0, Type-1, Var-2 [unused], Parent-3)
+def parents_changed(l1, l2):
+    # Determines which parents have changed, from l1 to l2, in that order
+    if len(l1) == len(l2) and len(l1) > 0:
+        # Either nothing changed or a Then became an Else
+        end1 = l1[-1]
+        end2 = l2[-1]
+        type1 = end1[-1:]
+        type2 = end2[-1:]
+        if type1 == "T" and type2 == "E":
+            return [end1[:-1] + "T"], "%"
+    elif len(l1) < len(l2):
+        # Stack gained exactly one parent, entered an Ite or While
+        return [l2[-1]], "+"
+    elif len(l1) > len(l2):
+        # One or more parents have dropped from stack,
+        # They are of type While or Else, never Then
+        return l1[len(l2):], "-"
+    return [], "="
+
+def things_before(s, i):
+    curr = s[i]
+    prev = s[i-1]
+    diff, action = parents_changed(prev[3], curr[3])
+    if action == "%":
+        # Start of an Else block, before is the If conditional
+        # Label is located at the end of Parent stack
+        return [int(curr[3][-1][:-1])]
+    elif action == "+":
+        # Previous statement was a While or Ite, this is the first
+        # Statement in the block, Label is simply i-1
+        return [i-1]
+    elif action == "=":
+        # In same context as previous statement, this is the basic default
+        # Case of just a sequence of statements, no larger structure
+        return [i-1]
+    elif action == "-":
+        print diff, "-"
+        # One or more parents were popped from the stack.
+        # If this includes a While, then we need to add the condition label
+        # Of the while. However if this includes an Ite, we need to add
+        # Both branches, and we read the Parents list left to right,
+        # Starting with the outermost structure.
+        before = []
+
+        def find_t_e(start, cond, rest):
+            cond_t = str(cond)+"T"
+            cond_e = str(cond)+"E"
+            state = 0
+            search = else_loc = i-1
+            then_loc = -1
+            while search > 0:
+                stmt = s[search]
+                parents = stmt[3]
+                if cond_t in parents:
+                    then_loc = search
+                    break
+                search = search - 1
+            # Once we have the locations of the last statement in the Then and
+            # Else branches, we check to see if those are within a While loop
+            # or in a nested Ite statement, and deal with them accordingly
+            then_parents = s[then_loc][3]
+            then_index = then_parents.index(cond_t)
+            then_after = then_parents[then_index+1:]
+            if then_after == []:
+                before.append(then_loc)
+            elif then_after[0][-1:] == "W":
+                before.append(int(then_after[0][:-1]))
+            else:
+                find_t_e(then_loc+1, int(then_after[0][:-1]), then_after[1:])
+            else_parents = s[else_loc][3]
+            else_index = else_parents.index(cond_e)
+            else_after = else_parents[else_index+1:]
+            if else_after == []:
+                before.append(else_loc)
+            elif else_after[0][-1:] == "W":
+                before.append(int(else_after[0][:-1]))
+            else:
+                find_t_e(else_loc+1, int(else_after[0][:-1]), else_after[1:])
+
+        if diff[0][-1:] == "W":
+            before.append(int(diff[0][:-1]))
+        else:
+            find_t_e(i, int(diff[0][:-1]), diff[1:])
+        print before
+        return before
+
+    # The above block should cover all cases
+    # Reaching this line should be an error
+    sys.stderr.write("Unknown symbol %s parsed in things_before"%action)
+    sys.exit(1)
+
+def ends_of_while(s, i):
+    curr = s[i]
+    return [1]
+
+def make_predecessors(l, s, i):
+    #curr = (Lab-0, Type-1, Var-2 [unused], Parents-3)
     if i > len(s) - 1:
         return
-    type = "Assignment"
-    cur = s[i]
-    if cur[1] == "Ite":
-        stack.append(("Ite", i))
-        type = "Ite"
-    elif cur[1] == "While":
-        stack.append(("While", i))
-        type = "While"
-    if i == 1:
-        return make_predecessors(l, s, i+1, stack, just_popped)
+    curr = s[i]
     predecessors = []
-    if type == "Assignment":
-        prev = s[i-1]
-        if cur[3] == prev[3]:
-            predecessors.append(prev[0])
-        # elif stack != []:
-        #     print "After a complex data structure Assignment"
-            # TODO pop last element off stack, save index in just_popped, use that to append
-            # just_popped = stack[-1][1]
-            # stack.pop()
-            # predecessors.append(just_popped)
-    elif type == "Ite":
-        print "Ite!"
-    else:
-        print "While!"
-    # print str(i)+":", predecessors
+    if i==1 and curr[1] != "While":
+        make_predecessors(l, s, i+1)
+        return
+    if i!=1:
+        before = things_before(s, i)
+        for e in before:
+            predecessors.append(e)
+    if curr[1] == "While":
+        ends = ends_of_while(s, i)
+        for e in ends:
+            predecessors.append(e)
     command = "predecessors(l%s"%(str(i))
     for p in predecessors:
         command = command + ", %s"%(str(p))
     command = command+")"
     l.append(command)
-    make_predecessors(l, s, i+1, stack, just_popped)
+    make_predecessors(l, s, i+1)
 
 
 def build_statements(l, s):
-    print s
-    #Consider while/if at start
     # EN_i definitions
     l.append("initialize(en1)")
     # Work through predecessors for:
     # Ite, While, Nested Statements, and Assignment
-    make_predecessors(l, s, 1, [], None)
-    # l.append("predecessors(l2, 1)")
-    # l.append("predecessors(l4, 3)")
-    # l.append("predecessors(l3, 2, 5)")
-    # l.append("predecessors(l5, 4)")
-    # l.append("predecessors(l6, 3)")
+    make_predecessors(l, s, 1)
     # EX_i definitions
     for i in range(1, len(s)):
         cur = s[i]
