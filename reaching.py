@@ -23,25 +23,35 @@ if len(sys.argv) <= 1:
     sys.exit(1)
 
 def make_predecessors(l, s, i, stack, just_popped):
-    #cur = (Lab-0, Type-1, Var-2, Parent-3)
+    #cur = (Lab-0, Type-1, Var-2 [unused], Parent-3)
     if i > len(s) - 1:
         return
+    type = "Assignment"
     cur = s[i]
     if cur[1] == "Ite":
         stack.append(("Ite", i))
+        type = "Ite"
     elif cur[1] == "While":
         stack.append(("While", i))
+        type = "While"
     if i == 1:
         return make_predecessors(l, s, i+1, stack, just_popped)
     predecessors = []
-    prev = s[i-1]
-    if cur[3] == prev[3]:
-        predecessors.append(prev[0])
-    elif stack != []:
-        # TODO use just_popped, pop from stack?
-        predecessors.append(stack[-1][1])
-    print predecessors
-    #TODO stress out about if/while
+    if type == "Assignment":
+        prev = s[i-1]
+        if cur[3] == prev[3]:
+            predecessors.append(prev[0])
+        # elif stack != []:
+        #     print "After a complex data structure Assignment"
+            # TODO pop last element off stack, save index in just_popped, use that to append
+            # just_popped = stack[-1][1]
+            # stack.pop()
+            # predecessors.append(just_popped)
+    elif type == "Ite":
+        print "Ite!"
+    else:
+        print "While!"
+    # print str(i)+":", predecessors
     command = "predecessors(l%s"%(str(i))
     for p in predecessors:
         command = command + ", %s"%(str(p))

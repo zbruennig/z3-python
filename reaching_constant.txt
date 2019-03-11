@@ -51,7 +51,7 @@ def print_model(m):
             except:
                 includes[rc] = [pair]
     # Prints in a reasonable order to read
-    for k,v in sorted(includes.items(), key=lambda (x,y): (x[2:], x[0:2])):
+    for k,v in sorted(includes.items(), key=lambda (x,y): (int(x[2:]), x[0:2])):
         print k.upper()+":",
         print sorted(v, key=lambda x: (x[0].__str__(), x[1].__str__()))
 
@@ -71,7 +71,7 @@ def write_model(m, file):
                 includes[rc] = [pair]
     # Prints in a reasonable order to read
     f = open(file, "w")
-    for k,v in sorted(includes.items(), key=lambda (x,y): (x[2:], x[0:2])):
+    for k,v in sorted(includes.items(), key=lambda (x,y): (int(x[2:]), x[0:2])):
         f.write(k.upper()+": ")
         pairs = sorted(v, key=lambda x: (x[0].__str__(), x[1].__str__()))
         f.write("%s\n"%(str(pairs)))

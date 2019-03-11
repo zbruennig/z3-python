@@ -6,11 +6,4 @@ z3/
 CMakeCache.txt
 CMakeLists.txt
 
-example.py
-example2.py
-example3.py
-rc2.py
-socrates.py
-visitor.py
-
 Makefile
