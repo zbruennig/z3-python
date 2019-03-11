@@ -1,9 +1,7 @@
 CMakeFiles/
-z3/
 
 *.DS_Store
 *.cmake
 CMakeCache.txt
 CMakeLists.txt
-
 Makefile
