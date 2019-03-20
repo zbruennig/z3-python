@@ -260,10 +260,16 @@ def while_stmt():
            keyword('do') + Lazy(stmt_list) + \
            keyword('end') ^ process
 
+def skip_stmt():
+    def process(parsed):
+        return Skip()
+    return keyword('skip') ^ process
+
 def stmt():
     return assign_stmt() | \
            if_stmt()     | \
-           while_stmt()
+           while_stmt()  | \
+           skip_stmt()
 
 # top-level parser
 def parser():

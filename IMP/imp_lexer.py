@@ -49,6 +49,7 @@ token_exprs = [
     (r'while',                 RESERVED),
     (r'do',                    RESERVED),
     (r'end',                   RESERVED),
+    (r'skip',                  RESERVED),
     (r'[0-9]+',                INT),
     (r'[A-Za-z][A-Za-z0-9_]*', ID),
 ]

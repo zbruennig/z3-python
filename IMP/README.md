@@ -10,3 +10,5 @@ reaching analysis tool. Changes made are:
 - Prevent evaluation of the AST. Once it creates the AST it simply returns it.
 
 - Rename classes for simplicity and familiarity.
+
+- Add skip statements

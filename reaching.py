@@ -184,6 +184,7 @@ for i in range(1, len(stmts)):
 # Generate temp files
 
 #DECLARE-Vars
+# TODO unassigned variables
 comma_separated = space_separated = ""
 for v in vars:
     comma_separated = comma_separated + v + ", "
@@ -239,3 +240,9 @@ for s in lst:
     contents = contents + "%s\n"%(s)
 f = open("statements.txt", "w")
 f.write(contents)
+
+## TODO:
+# Initialize a while, need to check if predecessor is l1 and if so run a special case of initialize
+# For this it's probably necessary to rewerite reaching_constant for tracking this
+#
+# Add extra variables like (x,?) which are used in the evaluation but never part of an assignment

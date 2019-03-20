@@ -46,7 +46,8 @@ def stmt_list():
 def stmt():
     return assign_stmt() | \
            if_stmt()     | \
-           while_stmt()
+           while_stmt()  | \
+           skip_stmt()
 
 def assign_stmt():
     def process(parsed):
@@ -74,6 +75,11 @@ def while_stmt():
     return keyword('while') + bexp() + \
            keyword('do') + Lazy(stmt_list) + \
            keyword('end') ^ process
+
+def skip_stmt():
+    def process(parsed):
+        return Skip()
+    return keyword('skip') ^ process
 
 # Boolean expressions
 def bexp():

@@ -25,6 +25,12 @@ def recursive_define(ast, stmts, parent):
         lab = len(stmts)
         var = ast.name
         stmts.append((lab, "Assignment", var, parent))
+    elif isinstance(ast, imp.Skip):
+        lab = len(stmts)
+        stmts.append((lab, "Skip", None, parent))
+
+def define_variables(ast):
+    pass
 
 def define_statements(ast):
     # Lists are mutable so this will be updated

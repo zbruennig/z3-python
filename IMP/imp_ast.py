@@ -109,6 +109,16 @@ class While(Statement):
             self.body.eval(env)
             condition_value = self.condition.eval(env)
 
+class Skip():
+    def __init__(self):
+        pass
+
+    def __repr__(self):
+        return 'Skip'
+
+    def eval(self, env):
+        pass
+
 class IntAexp(Aexp):
     def __init__(self, i):
         self.i = i
