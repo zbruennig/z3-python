@@ -29,8 +29,49 @@ def recursive_define(ast, stmts, parent):
         lab = len(stmts)
         stmts.append((lab, "Skip", None, parent))
 
+def add_from_aexp(expr, vars):
+    if isinstance(expr, imp.IntAexp):
+        pass
+    elif isinstance(expr, imp.VarAexp):
+        if expr.name not in vars:
+            vars.append(expr.name)
+    elif isinstance(expr, imp.BinopAexp):
+        add_from_aexp(expr.left, vars)
+        add_from_aexp(expr.right, vars)
+
+def add_from_bexp(expr, vars):
+    if isinstance(expr, imp.RelopBexp):
+        add_from_aexp(expr.left, vars)
+        add_from_aexp(expr.right, vars)
+    elif isinstance(expr, imp.AndBexp):
+        add_from_bexp(expr.left, vars)
+        add_from_bexp(expr.right, vars)
+    elif isinstance(expr, imp.OrBexp):
+        add_from_bexp(expr.left, vars)
+        add_from_bexp(expr.right, vars)
+    elif isinstance(expr, imp.NotBexp):
+        add_from_bexp(expr.exp, vars)
+
+def recursive_add(ast, vars):
+    if isinstance(ast, imp.Sequence):
+        recursive_add(ast.first, vars)
+        recursive_add(ast.second, vars)
+    elif isinstance(ast, imp.While):
+        add_from_bexp(ast.condition, vars)
+        recursive_add(ast.body, vars)
+    elif isinstance(ast, imp.Ite):
+        add_from_bexp(ast.condition, vars)
+        recursive_add(ast.true_stmt, vars)
+        recursive_add(ast.false_stmt, vars)
+    elif isinstance(ast, imp.Assignment):
+        add_from_aexp(ast.aexp, vars)
+    elif isinstance(ast, imp.Skip):
+        pass
+
 def define_variables(ast):
-    pass
+    vars = []
+    recursive_add(ast, vars)
+    return vars
 
 def define_statements(ast):
     # Lists are mutable so this will be updated
@@ -38,7 +79,8 @@ def define_statements(ast):
     recursive_define(ast, list, [])
     return list
 
-def labels(filename):
+def process_tree(filename):
     imp_ast = imp.create_ast(filename)
     statements = define_statements(imp_ast)
-    return statements
+    vars = define_variables(imp_ast)
+    return vars, statements

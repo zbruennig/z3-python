@@ -10,7 +10,8 @@ while A > B do
     if C > A + B then
       C := C - 1
     else
-      C := C + 1
+      C := C + 1;
+      skip
     end
   end;
   A := 3

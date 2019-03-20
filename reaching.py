@@ -172,19 +172,12 @@ def build_statements(l, s):
         else:
             l.append("non_assignment(l%s)"%(str(cur[0])))
 
-stmts = generate.labels(sys.argv[1])
+vars, stmts = generate.process_tree(sys.argv[1])
 labs = len(stmts) - 1
-vars = []
-for i in range(1, len(stmts)):
-    stmt = stmts[i]
-    var = stmt[2]
-    if var != None and var not in vars:
-        vars.append(var)
 
 # Generate temp files
 
 #DECLARE-Vars
-# TODO unassigned variables
 comma_separated = space_separated = ""
 for v in vars:
     comma_separated = comma_separated + v + ", "

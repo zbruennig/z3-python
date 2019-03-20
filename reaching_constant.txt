@@ -1,9 +1,13 @@
 from z3 import *
 
+Var = Lab = None
+
 #DECLARE-Vars
 
 #DECLARE-Labs
 
+if Var == None or Lab == None:
+    sys.exit()
 ln = len(Var)*len(Lab)
 #DECLARE-BoolVectors
 

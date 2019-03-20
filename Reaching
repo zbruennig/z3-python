@@ -13,12 +13,12 @@ sed -i -e '/#DECLARE-BoolVectors/r boolvectors.txt' execute.py
 sed -i -e '/#DECLARE-enex/r enex.txt' execute.py
 sed -i -e '/#DECLARE-statements/r statements.txt' execute.py
 
-rm vars.txt
-rm labs.txt
-rm boolvectors.txt
-rm enex.txt
-rm statements.txt
-rm execute.py-e
+rm -f vars.txt
+rm -f labs.txt
+rm -f boolvectors.txt
+rm -f enex.txt
+rm -f statements.txt
+rm -f execute.py-e
 
 python execute.py
 # rm execute.py
