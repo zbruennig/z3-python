@@ -1,6 +1,10 @@
+import sys
 from z3 import *
 
 Var = Lab = None
+out = "model.txt"
+if len(sys.argv) > 1:
+    out = sys.argv[1]
 
 #DECLARE-Vars
 
@@ -8,6 +12,10 @@ Var = Lab = None
 
 if Var == None or Lab == None:
     sys.exit()
+if Var == [] or Lab == []:
+    sys.stderr.write("No variables or labels to analyze.\n")
+    sys.exit()
+
 ln = len(Var)*len(Lab)
 #DECLARE-BoolVectors
 
@@ -80,7 +88,8 @@ def write_model(m, file):
         pairs = sorted(v, key=lambda x: (x[0].__str__(), x[1].__str__()))
         f.write("%s\n"%(str(pairs)))
 
-def initialize(equation):
+def initialize(equation, *pred):
+    initialized = True
     for i in range(ln):
         if i % len(Lab) == len(Lab)-1: # (_,l?)
             r.append(equation[i] == True)
@@ -113,14 +122,18 @@ def non_assignment(lab):
 
 s = Solver()
 r = []
+initialized = False
 
 #DECLARE-enex
 
 #DECLARE-statements
 
+if not initialized:
+    initialize(en1)
+
 s.add(And(r))
 if s.check() == sat:
     print_model(s.model())
-    write_model(s.model(), "model.txt")
+    write_model(s.model(), out)
 else:
     print s.check()

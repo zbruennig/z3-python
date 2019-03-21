@@ -2,8 +2,8 @@
 
 python reaching.py $1
 
-rm IMP/*.pyc
-rm generate.pyc
+rm -f IMP/*.pyc
+rm -f generate.pyc
 
 cp reaching_constant.txt execute.py
 
@@ -20,5 +20,5 @@ rm -f enex.txt
 rm -f statements.txt
 rm -f execute.py-e
 
-python execute.py
-# rm execute.py
+python execute.py $2
+rm -f execute.py

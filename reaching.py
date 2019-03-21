@@ -1,8 +1,13 @@
 import generate
 import sys
+import os
 
 if len(sys.argv) <= 1:
     sys.stderr.write('usage: %s filename\n' % sys.argv[0])
+    sys.exit(1)
+
+if not os.path.isfile(sys.argv[1]):
+    sys.stderr.write('invalid file: %s\n'%sys.argv[1])
     sys.exit(1)
 
 def parents_changed(l1, l2):
@@ -184,8 +189,12 @@ for v in vars:
     space_separated = space_separated + v + " "
 comma_separated = comma_separated[:len(comma_separated)-2]
 space_separated = space_separated[:len(space_separated)-1]
-contents = "%s = Ints(\"%s\")\n"%(comma_separated, space_separated)
-contents = contents + "Var = [%s]"%(comma_separated)
+contents = ""
+if len(vars) > 1:
+    contents = "%s = Ints(\"%s\")\n"%(comma_separated, space_separated)
+elif len(vars) == 1:
+    contents = "%s = Ints(\"%s\")[0]\n"%(comma_separated, space_separated)
+contents = contents + "Var = [%s]\n"%(comma_separated)
 f = open("vars.txt", "w")
 f.write(contents)
 
@@ -237,5 +246,3 @@ f.write(contents)
 ## TODO:
 # Initialize a while, need to check if predecessor is l1 and if so run a special case of initialize
 # For this it's probably necessary to rewerite reaching_constant for tracking this
-#
-# Add extra variables like (x,?) which are used in the evaluation but never part of an assignment
