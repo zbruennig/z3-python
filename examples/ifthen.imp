@@ -1,4 +1,0 @@
-if x > 3 then
-  y := 4
-end;
-skip

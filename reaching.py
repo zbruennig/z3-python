@@ -29,13 +29,40 @@ def parents_changed(l1, l2):
         return l1[len(l2):], "-"
     return [], "="
 
+#TODO although this is not required for the project, this also does not work,
+# And it does not sit well with me having broken code in my projects
+def find_t(accumulator, s, start, cond):
+    # We need to add cond and start to our accumulator,
+    # the two potential branches - imagine this as having an Else path
+    # but of length 0, thus the predecessor is the condition itself
+    then_loc = start
+    accumulator.append(cond)
+    # We should still check to see if the Then branch contains another structure
+    # Either a While or an Ite
+    then_parents = s[then_loc][3]
+    then_index = then_parents.index(str(cond)+"T")
+    then_after = then_parents[then_index+1:]
+    if then_after == []:
+        accumulator.append(then_loc)
+    elif then_after[0][-1:] == "W":
+        accumulator.append(int(then_after[0][:-1]))
+    else:
+        find_t_e(accumulator, s, then_loc, int(then_after[0][:-1]))
+
 def find_t_e(accumulator, s, start, cond):
     cond_t = str(cond)+"T"
     cond_e = str(cond)+"E"
-    state = 0
+    if cond_t in s[start][3]:
+        # This is an Ite without the Else, a separate case to handle
+        # find_t(accumulator, s, start, cond)
+        sys.stderr.write("Reaching analysis cannot handle if-then without else.\n")
+        sys.stderr.write("Please create an else branch with a skip and run again.\n")
+        sys.exit(1)
+        return
     search = else_loc = start
     then_loc = -1
     while search > 0:
+        # Find the location of the last Then
         stmt = s[search]
         parents = stmt[3]
         if cond_t in parents:
@@ -116,7 +143,7 @@ def ends_of_while(s, i):
         else:
             line = line - 1
             break
-    #s[line][1] MUST be assignment (or Skip, but that isn't defined yet)
+    #s[line][1] MUST be assignment or Skip
     end_parents = s[line][3]
     if token in end_parents:
         token_index = end_parents.index(token)
