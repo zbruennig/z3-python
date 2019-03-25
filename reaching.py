@@ -54,10 +54,10 @@ def find_t_e(accumulator, s, start, cond):
     cond_e = str(cond)+"E"
     if cond_t in s[start][3]:
         # This is an Ite without the Else, a separate case to handle
-        # find_t(accumulator, s, start, cond)
-        sys.stderr.write("Reaching analysis cannot handle if-then without else.\n")
-        sys.stderr.write("Please create an else branch with a skip and run again.\n")
-        sys.exit(1)
+        find_t(accumulator, s, start, cond)
+        # sys.stderr.write("Reaching analysis cannot handle if-then without else.\n")
+        # sys.stderr.write("Please create an else branch with a skip and run again.\n")
+        # sys.exit(1)
         return
     search = else_loc = start
     then_loc = -1

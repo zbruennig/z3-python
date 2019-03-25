@@ -129,6 +129,8 @@ initialized = False
 #DECLARE-statements
 
 if len(r) == 0:
+    # There are no rules, continuing would create initialize rule and none else
+    # If len(r) is zero then we do not want z3 to run at all.
     sys.exit(1)
 
 if not initialized:

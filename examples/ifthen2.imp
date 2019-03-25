@@ -1,0 +1,15 @@
+if x > 3 then
+  y := 4;
+  if z > x then
+    x := x + y
+  else
+    if z = x then
+      z := z - 1;
+      x := x + 1
+    end
+  end;
+  if x > 5 then
+    x := 4
+  end
+end;
+skip
