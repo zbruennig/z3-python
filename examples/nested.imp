@@ -11,6 +11,10 @@ while A > B do
       C := C - 1
     else
       C := C + 1;
+      while D > B do
+        D := D - 1;
+        B := B + C - D
+      end;
       skip
     end
   end;

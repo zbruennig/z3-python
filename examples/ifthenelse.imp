@@ -1,0 +1,6 @@
+if x > 3 then
+  y := 4
+else
+  y := 3
+end;
+skip

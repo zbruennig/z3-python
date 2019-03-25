@@ -99,7 +99,7 @@ def things_before(s, i):
 
     # The above block should cover all cases
     # Reaching this line should be an error
-    sys.stderr.write("Unknown symbol %s parsed in things_before"%action)
+    sys.stderr.write("Unknown symbol %s parsed in things_before\n"%action)
     sys.exit(1)
 
 def ends_of_while(s, i):
@@ -132,11 +132,11 @@ def ends_of_while(s, i):
             find_t_e(ends, s, line, int(after[0][:-1]))
         else:
             # Should never reach here!
-            sys.stderr.write("Unknown case %s found in ends_of_while"%after[0][-1:])
+            sys.stderr.write("Unknown case %s found in ends_of_while\n"%after[0][-1:])
         return ends
     else:
-        # I'm not sure how/why but s[line] is not a child of s[i]. Error case.
-        sys.stderr.write("Cannot find child processes in %s of statement %s"%(line, i))
+        # I'm not sure how/why we got here but s[line] is not a child of s[i]. Error case.
+        sys.stderr.write("Cannot find child processes in %s of statement %s\n"%(line, i))
         return []
 
 def make_predecessors(l, s, i):
@@ -243,6 +243,9 @@ for s in lst:
 f = open("statements.txt", "w")
 f.write(contents)
 
-## TODO:
-# Initialize a while, need to check if predecessor is l1 and if so run a special case of initialize
-# For this it's probably necessary to rewerite reaching_constant for tracking this
+## TODO - IMPORTANT
+#   In this reaching definition of the Imp language, we assume all
+#   conditionals are structured in an if-then-else format.
+#   That is, if there is an if statement it has both a then and an else,
+#   instead of just a then. Our parser and tree will assert the latter
+#   is acceptable, but our reaching definitions will fail in that case.

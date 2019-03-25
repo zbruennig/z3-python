@@ -1,6 +1,9 @@
 skip;
 while X > 0 do
-  X := X - 1;
-  Y := Y + 1
+  if X > 0 then
+    X := X - 1
+  else
+    skip
+  end
 end;
 skip

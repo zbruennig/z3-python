@@ -1,5 +1,6 @@
 from IMP import imp
 from copy import deepcopy
+import sys
 
 def recursive_define(ast, stmts, parent):
     # Parent is a stack of nested statements for the label, Ites and Whiles
@@ -35,9 +36,14 @@ def add_from_aexp(expr, vars):
     elif isinstance(expr, imp.VarAexp):
         if expr.name not in vars:
             vars.append(expr.name)
+    elif type(expr) == type(""):
+        if expr not in vars:
+            vars.append(expr)
     elif isinstance(expr, imp.BinopAexp):
         add_from_aexp(expr.left, vars)
         add_from_aexp(expr.right, vars)
+    else:
+        sys.stderr.write("Could not parse aexp expression: %s\n"%expr)
 
 def add_from_bexp(expr, vars):
     if isinstance(expr, imp.RelopBexp):
@@ -51,6 +57,8 @@ def add_from_bexp(expr, vars):
         add_from_bexp(expr.right, vars)
     elif isinstance(expr, imp.NotBexp):
         add_from_bexp(expr.exp, vars)
+    else:
+        sys.stderr.write("Could not parse bexp expression: %s\n"%expr)
 
 def recursive_add(ast, vars):
     if isinstance(ast, imp.Sequence):
@@ -64,6 +72,7 @@ def recursive_add(ast, vars):
         recursive_add(ast.true_stmt, vars)
         recursive_add(ast.false_stmt, vars)
     elif isinstance(ast, imp.Assignment):
+        add_from_aexp(ast.name, vars)
         add_from_aexp(ast.aexp, vars)
     elif isinstance(ast, imp.Skip):
         pass
