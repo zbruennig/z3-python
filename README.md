@@ -38,6 +38,11 @@ Output:
     EX10: [(A, 2), (A, 7), (B, 3), (B, 8), (C, 4), (C, 6), (N, 10)]
 ```
 
+To run all tests of this program:
+```
+./Test
+```
+
 Additionally, an output file with default name model.txt will be created with this output in the main directory.
 
 *Note: The .imp extension on the file is not necessary; this program can be run on plaintext files, or any other type of file with readable characters. The examples in this repo use the .imp extension purely for distinguishing reasons; there is no special benefits beyond that.*
